@@ -1,5 +1,6 @@
 use crate::consts::*;
 use anyhow::Result;
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use std::process::Command;
 use sysinfo::System;
@@ -13,6 +14,14 @@ pub struct HardwareInfo {
     pub gpu_memory: Option<u64>,
     pub cuda_version: Option<String>,
     pub driver_version: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GpuMetrics {
+    pub utilization: u8,
+    pub memory_used: u64,
+    pub temperature: u8,
+    pub timestamp: String,
 }
 
 pub struct HardwareCollector {
@@ -35,6 +44,27 @@ impl HardwareCollector {
             gpu_memory: self.get_gpu_memory(),
             cuda_version: self.get_cuda_version(),
             driver_version: self.get_driver_version(),
+        })
+    }
+
+    pub fn collect_gpu_metrics(&self) -> Result<GpuMetrics> {
+        // 获取GPU利用率
+        let utilization = self.get_gpu_utilization()?;
+        
+        // 获取显存使用量
+        let memory_used = self.get_gpu_memory_used()?;
+        
+        // 获取GPU温度
+        let temperature = self.get_gpu_temperature()?;
+        
+        // 获取当前时间戳（ISO 8601格式）
+        let timestamp = Utc::now().to_rfc3339();
+        
+        Ok(GpuMetrics {
+            utilization,
+            memory_used,
+            temperature,
+            timestamp,
         })
     }
 
@@ -120,6 +150,42 @@ impl HardwareCollector {
             }
         }
         None
+    }
+
+    fn get_gpu_utilization(&self) -> Result<u8> {
+        let output = Command::new("nvidia-smi")
+            .args(&["--query-gpu=utilization.gpu", "--format=csv,noheader,nounits"])
+            .output()?;
+        
+        let utilization_str = String::from_utf8(output.stdout)?;
+        let utilization = utilization_str.trim().parse::<u8>()
+            .map_err(|_| anyhow::anyhow!("无法解析GPU利用率"))?;
+        
+        Ok(utilization)
+    }
+    
+    fn get_gpu_memory_used(&self) -> Result<u64> {
+        let output = Command::new("nvidia-smi")
+            .args(&["--query-gpu=memory.used", "--format=csv,noheader,nounits"])
+            .output()?;
+        
+        let memory_str = String::from_utf8(output.stdout)?;
+        let memory = memory_str.trim().parse::<u64>()
+            .map_err(|_| anyhow::anyhow!("无法解析显存使用量"))?;
+        
+        Ok(memory)
+    }
+    
+    fn get_gpu_temperature(&self) -> Result<u8> {
+        let output = Command::new("nvidia-smi")
+            .args(&["--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"])
+            .output()?;
+        
+        let temperature_str = String::from_utf8(output.stdout)?;
+        let temperature = temperature_str.trim().parse::<u8>()
+            .map_err(|_| anyhow::anyhow!("无法解析GPU温度"))?;
+        
+        Ok(temperature)
     }
 
     fn generate_system_fingerprint(&self) -> Result<String> {

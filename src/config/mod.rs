@@ -96,4 +96,10 @@ impl ConfigManager {
         self.save()?;
         Ok(())
     }
+
+    pub fn update_access_token(&mut self, access_token: String) -> Result<()> {
+        self.config.access_token = Some(access_token);
+        self.save()?;
+        Ok(())
+    }
 } 

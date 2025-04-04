@@ -3,16 +3,28 @@ pub const API_BASE_URL: &str = "https://zkom-backend.abo.network";
 #[allow(dead_code)]
 pub const API_VERSION: &str = "v1";
 
+// NATS和Stable Diffusion配置
+pub const NATS_SERVER_URL: &str = "nats://zkom-nats.abo.network:4222";
+pub const SD_API_URL: &str = "http://localhost:7860";
+
 // 设备注册相关配置
 #[allow(dead_code)]
 pub const DEVICE_CODE_LENGTH: usize = 8;
 #[allow(dead_code)]
-pub const DEVICE_CODE_EXPIRY_SECONDS: u64 = 300; // 5分钟
-pub const DEVICE_VERIFY_POLL_INTERVAL: u64 = 5; // 5秒
+pub const DEVICE_CODE_EXPIRY_SECONDS: u64 = 300; // 5 minutes
+pub const DEVICE_VERIFY_POLL_INTERVAL: u64 = 5; // 5 seconds
+
+// 心跳相关配置
+pub const HEARTBEAT_INTERVAL_SECONDS: u64 = 60; // Default 60 seconds heartbeat interval
+
+// 令牌相关配置
+pub const TOKEN_REFRESH_THRESHOLD_SECONDS: u64 = 300; // Refresh token when less than 5 minutes remaining
 
 // API 路径
 pub const API_NODES_INIT: &str = "/api/nodes/init";
 pub const API_NODES_VERIFY: &str = "/api/nodes/verify";
+pub const API_NODES_HEARTBEAT: &str = "/api/nodes/device/heartbeat";
+pub const API_NODES_REFRESH: &str = "/api/nodes/device/refresh";
 
 // 配置相关
 pub const CONFIG_DIR: &str = "zkom";
@@ -25,25 +37,25 @@ pub const FINGERPRINT_MEM_PREFIX: &str = "MEM";
 pub const FINGERPRINT_OS_PREFIX: &str = "OS";
 
 // 错误消息
-pub const ERROR_DEVICE_INIT_FAILED: &str = "设备初始化失败";
-pub const ERROR_DEVICE_VERIFY_FAILED: &str = "设备验证失败";
+pub const ERROR_DEVICE_INIT_FAILED: &str = "Device initialization failed";
+pub const ERROR_DEVICE_VERIFY_FAILED: &str = "Device verification failed";
 #[allow(dead_code)]
-pub const ERROR_DEVICE_CODE_EXPIRED: &str = "设备码已过期";
+pub const ERROR_DEVICE_CODE_EXPIRED: &str = "Device code expired";
 #[allow(dead_code)]
-pub const ERROR_DEVICE_DISABLED: &str = "设备已被禁用";
+pub const ERROR_DEVICE_DISABLED: &str = "Device has been disabled";
 #[allow(dead_code)]
-pub const ERROR_NETWORK: &str = "网络错误";
+pub const ERROR_NETWORK: &str = "Network error";
 
 // 提示消息
 pub const MSG_STARTING_NODE: &str = "Starting ZKOM node client...";
 pub const MSG_NODE_CONFIGURED: &str = "Node already configured, starting...";
-pub const MSG_DEVICE_VERIFY_SUCCESS: &str = "设备验证成功！";
-pub const MSG_DEVICE_VERIFY_TIMEOUT: &str = "设备验证超时，请重新运行程序";
-pub const MSG_NODE_STARTING: &str = "节点启动中...";
-pub const MSG_NODE_ID: &str = "节点ID: {}";
+pub const MSG_DEVICE_VERIFY_SUCCESS: &str = "Device verification successful!";
+pub const MSG_DEVICE_VERIFY_TIMEOUT: &str = "Device verification timeout, please restart the program";
+pub const MSG_NODE_STARTING: &str = "Node starting...";
+pub const MSG_NODE_ID: &str = "Node ID: {}";
 
 // 验证提示
-pub const MSG_VERIFY_INSTRUCTIONS: &str = "请访问以下网址完成设备验证：";
-pub const MSG_VERIFY_URI: &str = "验证网址: {}";
-pub const MSG_DEVICE_CODE: &str = "设备码: {}";
-pub const MSG_CODE_EXPIRY: &str = "设备码有效期: {} 秒"; 
+pub const MSG_VERIFY_INSTRUCTIONS: &str = "Please visit the following URL to complete device verification:";
+pub const MSG_VERIFY_URI: &str = "Verification URL: {}";
+pub const MSG_DEVICE_CODE: &str = "Device Code: {}";
+pub const MSG_CODE_EXPIRY: &str = "Code expiry: {} seconds"; 
